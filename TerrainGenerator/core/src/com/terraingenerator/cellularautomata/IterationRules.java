@@ -23,7 +23,7 @@ public class IterationRules {
     }
 
     /**
-     * Used to determing whether a cell is alive or not in the next iteration
+     * Used to determining whether a cell is alive or not in the next iteration
      *
      * @param isAlive
      * @param neighborsAlive
@@ -36,6 +36,12 @@ public class IterationRules {
 
     }
 
+    /**
+     * This sets the rules in the object
+     *
+     * @param birthConds
+     * @param survivalConds
+     */
     public void setRules(int[] birthConds, int[] survivalConds){
 
         this.birthConditions = new HashSet<Integer>();
