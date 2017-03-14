@@ -78,6 +78,8 @@ public class Main extends ApplicationAdapter {
 		this.img = new Texture(pixmap);
 
 		batch.draw(this.img, 0, 0);
+
+		this.pixmap.dispose();
 	}
 
 }

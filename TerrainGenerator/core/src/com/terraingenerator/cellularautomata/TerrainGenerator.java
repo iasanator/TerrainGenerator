@@ -2,8 +2,12 @@ package com.terraingenerator.cellularautomata;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Created by iassona on 3/11/2017.
@@ -36,7 +40,119 @@ public class TerrainGenerator {
 
         this.iterationRules.setRules(new int[]{0,1,2,3,4}, new int[]{0,1,2,3});
 
-        return this.generate(sizeX, sizeY);
+        boolean[][] wallmap = this.generate(sizeX, sizeY);
+        wallmap = filterCave(wallmap);
+
+        return wallmap;
+
+    }
+
+    /**
+     * This will filter out all small caves and leave just the largest, connect cave.
+     *
+     * @param wallmap
+     * @return
+     */
+    private boolean[][] filterCave(boolean[][] wallmap){
+
+        int sizeX = wallmap.length;
+        int sizeY = wallmap[0].length;
+
+        int[][] filtered = new int[sizeX][sizeY];
+
+        int caveIndex = 1;
+
+        for (int i = 0; i < sizeX; i++){
+            for (int j = 0; j < sizeY; j++){
+                if (wallmap[i][j] == true){
+                    filtered[i][j] = -1;
+                } else {
+                    filtered[i][j] = 0;
+                }
+            }
+        }
+
+        for (int i = 0; i < sizeX; i++){
+            for (int j = 0; j < sizeY; j++){
+
+                if (filtered[i][j] == -1){
+                    continue;
+                }
+
+                if (filtered[i][j] == 0){
+                    filtered[i][j] = caveIndex;
+
+                    LinkedList<Point2D> inCave = new LinkedList<Point2D>();
+                    inCave.add(new Point2D.Double(i, j));
+
+
+                    while(inCave.size() > 0){
+
+                        Point2D currentPoint = inCave.getFirst();
+                        inCave.removeFirst();
+
+                        for (int xVal : new int[]{-1, 0, 1}){
+                            for (int yVal : new int[]{-1, 0, 1}){
+
+                                int xPos = ((int)currentPoint.getX() + xVal) % sizeX;
+                                if (xPos < 0){xPos += sizeX;}
+
+                                int yPos = ((int)currentPoint.getY() + yVal) % sizeY;
+                                if (yPos < 0){yPos += sizeY;}
+
+                                if (filtered[xPos][yPos] == 0){
+                                    filtered[xPos][yPos] = caveIndex;
+                                    inCave.add(new Point2D.Double(xPos, yPos));
+                                }
+                            }
+                        }
+                    }
+
+                    caveIndex++;
+
+                }
+            }
+        }
+
+        HashMap<Integer, Integer> caveCount = new HashMap<Integer, Integer>();
+
+        for (int i = 0; i < sizeX; i++){
+            for (int j = 0; j < sizeY; j++){
+
+                int cave = filtered[i][j];
+
+                if (caveCount.containsKey(cave)){
+                    int count = caveCount.get(cave);
+                    caveCount.put(cave, count + 1);
+                } else {
+                    caveCount.put(cave, 1);
+                }
+            }
+        }
+
+        int mostCave = 0;
+        int mostCaveCount = 0;
+        for (int key : caveCount.keySet()){
+            if (caveCount.get(key) > mostCaveCount && key != -1){
+                mostCave = key;
+                mostCaveCount = caveCount.get(key);
+            }
+        }
+
+        boolean[][] output = new boolean[sizeX][sizeY];
+
+        for (int i = 0; i < sizeX; i++){
+            for (int j = 0; j < sizeY; j++){
+
+                if (filtered[i][j] == mostCave){
+                    output[i][j] = false;
+                } else {
+                    output[i][j] = true;
+                }
+            }
+        }
+
+        return output;
 
     }
 
@@ -90,7 +206,6 @@ public class TerrainGenerator {
         }
 
         return heightmap;
-
     }
 
 
@@ -192,6 +307,12 @@ public class TerrainGenerator {
 
     }
 
+    /**
+     * This saves a PNG of a given heightmap in the root directory of this project
+     *
+     * @param heightmap
+     * @param filename
+     */
     private void writeToPNG(int[][] heightmap, String filename){
 
         int sizeX = heightmap.length;
