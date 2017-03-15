@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import com.terraingenerator.cellularautomata.TerrainGenerator;
+import com.terraingenerator.cellularautomata.CellularTerrainGenerator;
 
 
 public class Main extends ApplicationAdapter {
@@ -19,7 +19,7 @@ public class Main extends ApplicationAdapter {
 
 	SpriteBatch batch;
 
-	TerrainGenerator terraGen;
+	CellularTerrainGenerator terraGen;
 	int[][] heightmap;
 
 
@@ -31,20 +31,23 @@ public class Main extends ApplicationAdapter {
 		Gdx.graphics.setWindowedMode(SIZEX, SIZEY);
 		batch = new SpriteBatch();
 
-		this.terraGen = new TerrainGenerator();
+		this.terraGen = new CellularTerrainGenerator();
 
-		boolean generateHills = false;
+		int generateID = 2;
 
-		if (generateHills){
+		if (generateID == 0){
 			this.heightmap = terraGen.generateHillsHeightmap(SIZEX, SIZEY);
 			terraGen.outputPNG(this.heightmap, "output");
-		} else {
+		} else if (generateID == 1) {
 			boolean[][] wallmap = terraGen.generateCave(SIZEX, SIZEY);
 			terraGen.outputPNG(wallmap, "output");
 			this.heightmap = terraGen.convertToHeightmap(wallmap);
-		}
-		terraGen.outputPNG(heightmap, "output");
+		} else {
+			boolean[][] wallmap = terraGen.generateMaze(SIZEX, SIZEY);
+			terraGen.outputPNG(wallmap, "output");
+			this.heightmap = terraGen.convertToHeightmap(wallmap);
 
+		}
 
 	}
 

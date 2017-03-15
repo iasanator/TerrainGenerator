@@ -15,7 +15,7 @@ import java.util.LinkedList;
  * This will provide an interface for a user to create random terrain
  *
  */
-public class TerrainGenerator {
+public class CellularTerrainGenerator {
 
     private CellularWorld cellularWorld;
     private IterationRules iterationRules;
@@ -23,7 +23,7 @@ public class TerrainGenerator {
     /**
      * Creates a new terrain generator object
      */
-    public TerrainGenerator(){
+    public CellularTerrainGenerator(){
 
         this.iterationRules = new IterationRules(new int[]{}, new int[]{});
         this.cellularWorld = new CellularWorld(8,8,0.5f, this.iterationRules);
@@ -44,6 +44,35 @@ public class TerrainGenerator {
         wallmap = filterCave(wallmap);
 
         return wallmap;
+
+    }
+
+    /**
+     * This generates a pseudo-maze
+     * @param sizeX
+     * @param sizeY
+     * @return
+     */
+    public boolean[][] generateMaze(int sizeX, int sizeY){
+
+        this.iterationRules.setRules(new int[]{3}, new int[]{0,1,2,3,4});
+
+        boolean[][] wallmap = this.generate(sizeX, sizeY);
+
+        return wallmap;
+    }
+
+    /**
+     * Generates a boolean array of blobs where 'true' is in a blob and 'false' is not
+     * @param sizeX
+     * @param sizeY
+     * @return
+     */
+    public boolean[][] generateHills(int sizeX, int sizeY){
+
+        this.iterationRules.setRules(new int[]{0,1,2,3,4}, new int[]{0,1,2,3,4});
+
+        return this.generate(sizeX, sizeY);
 
     }
 
@@ -153,20 +182,6 @@ public class TerrainGenerator {
         }
 
         return output;
-
-    }
-
-    /**
-     * Generates a boolean array of blobs where 'true' is in a blob and 'false' is not
-     * @param sizeX
-     * @param sizeY
-     * @return
-     */
-    public boolean[][] generateHills(int sizeX, int sizeY){
-
-        this.iterationRules.setRules(new int[]{0,1,2,3,4}, new int[]{0,1,2,3,4});
-
-        return this.generate(sizeX, sizeY);
 
     }
 
