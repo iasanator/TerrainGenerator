@@ -14,8 +14,8 @@ import com.terraingenerator.cellularautomata.CellularTerrainGenerator;
 
 public class Main extends ApplicationAdapter {
 
-	public static final int SIZEX = 512;
-	public static final int SIZEY = 512;
+	public static final int SIZEX = 4000;
+	public static final int SIZEY = 4000;
 
 	SpriteBatch batch;
 
@@ -33,7 +33,7 @@ public class Main extends ApplicationAdapter {
 
 		this.terraGen = new CellularTerrainGenerator();
 
-		int generateID = 2;
+		int generateID = 1;
 
 		if (generateID == 0){
 			this.heightmap = terraGen.generateHillsHeightmap(SIZEX, SIZEY);
@@ -46,7 +46,6 @@ public class Main extends ApplicationAdapter {
 			boolean[][] wallmap = terraGen.generateMaze(SIZEX, SIZEY);
 			terraGen.outputPNG(wallmap, "output");
 			this.heightmap = terraGen.convertToHeightmap(wallmap);
-
 		}
 
 	}
@@ -69,10 +68,10 @@ public class Main extends ApplicationAdapter {
 
 	private void renderPixels(Batch batch, int[][] heightmap){
 
-		this.pixmap = new Pixmap(512, 512, Pixmap.Format.RGB888);
+		this.pixmap = new Pixmap(SIZEX, SIZEY, Pixmap.Format.RGB888);
 
-		for (int i = 0; i < 512; i++){
-			for (int j = 0; j < 512; j++){
+		for (int i = 0; i < SIZEY; i++){
+			for (int j = 0; j < SIZEY; j++){
 				float shade = (float)((double)heightmap[i][j] / 255.0);
 				pixmap.drawPixel(i, j, Color.rgba8888(shade, shade, shade, 0.99f));
 			}

@@ -123,6 +123,8 @@ public class CellularTerrainGenerator {
                         for (int xVal : new int[]{-1, 0, 1}){
                             for (int yVal : new int[]{-1, 0, 1}){
 
+                                if (xVal == yVal || xVal == -yVal) {continue;}
+
                                 int xPos = ((int)currentPoint.getX() + xVal) % sizeX;
                                 if (xPos < 0){xPos += sizeX;}
 
